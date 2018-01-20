@@ -1,0 +1,59 @@
+{
+  "users": [
+    {
+      "username": "aaa",
+      "email": "aaa@aaa.aa",
+      "status": "subscribed"
+    },
+    {
+      "username": "bbb",
+      "email": "bbb@aaa.aa",
+      "status": "subscribed"
+    },
+    {
+      "username": "ccc",
+      "email": "ccc@aaa.aa",
+      "status": "subscribed"
+    },
+    {
+      "username": "eee",
+      "email": "eee@eee.ee",
+      "status": "subscribed"
+    },
+    {
+      "username": "fff",
+      "email": "fff@fff.ff",
+      "status": "subscribed"
+    },
+    {
+      "username": "ttt",
+      "email": "ttt@fff.ff",
+      "status": "subscribed"
+    },
+    {
+      "username": "zzz",
+      "email": "ttt@zz.zz",
+      "status": "subscribed"
+    },
+    {
+      "username": "ss",
+      "email": "aaa@zz.zz",
+      "status": "subscribed"
+    },
+    {
+      "username": "bbbb",
+      "email": "bbb@bb.bb",
+      "status": "subscribed"
+    },
+    {
+      "username": "hhh",
+      "email": "hhh@.hh.hh",
+      "status": "subscribed"
+    },
+    {
+      "username": "jjj",
+      "email": "jjj@jjj.jj",
+      "status": "subscribed"
+    }
+  ]
+}
