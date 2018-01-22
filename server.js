@@ -24,6 +24,7 @@ app.get('/', (req, res) => {
 
 app.get('/users', (req, res, next) => {
   Subscriber.find((err, subscribers) => {
+    if(err) console.error(err)
     let html = "<h3>Подписчики</h3><ol>"
     for (let user of subscribers) {
       html = html + "<li>" + user.username + " - " + user.email + "</li>"
