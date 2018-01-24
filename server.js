@@ -1,18 +1,23 @@
 const bodyParser = require('body-parser')
 const config = require('./config')
 const express = require('express')
-const mongoose = require('mongoose')
+const MongoClient = require('mongodb').MongoClient
 const path = require('path')
 const qs = require('querystring')
-require('./models/subscriber')
-const Subscriber = mongoose.model('subscribers')
 const validateSubscriptionForm = require('./public/common/validation')
 
-mongoose.connect(config.DB_URL)
-  .then(() => console.log('MongoDB connected'))
-  .catch((err) => console.log(err))
+
+let db
+
 
 const app = express()
+
+app.use((req, res, next) => {
+  MongoClient.connect(config.DB_URL, (error, connection) => {
+    req.conn = connection.db('subform')
+    next()
+  })
+})
 
 app.use('/', express.static(path.join(__dirname, './public')))
 
@@ -23,8 +28,7 @@ app.get('/', (req, res) => {
 })
 
 app.get('/users', (req, res, next) => {
-  Subscriber.find((err, subscribers) => {
-    if(err) return next(err)
+  req.conn.collection('subscribers').find().toArray().then(subscribers => {
     let html = "<h3>Подписчики</h3><ol>"
     for (let user of subscribers) {
       html = html + "<li>" + user.username + " - " + user.email + "</li>"
@@ -40,18 +44,16 @@ app.post('/subscribe', (req, res, next) => {
   let result = validateSubscriptionForm({username, email})
   res.writeHead(200, {'Content-Type': 'application/json'})
   if (result) {
-    new Subscriber({ username: username, email: email, status: "subscribed" })
-      .save()
-      .then(() => {
-        console.log('Save successfully')
+    req.conn.collection('subscribers')
+      .insertOne({ username: username, email: email, status: "subscribed"}, () => {
+        console.log('Subscriber saved successfully')
         res.end(JSON.stringify({ 'status': 'subscribed' }))
       })
-      .catch(next)
   } else {
     res.end(JSON.stringify({ 'status': 'did not subscribe' }))
   }
 })
 
 app.listen(8000, () => {
-  console.log('server start on port 8000')
+  console.log('Server start on port 8000')
 })
