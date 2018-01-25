@@ -6,15 +6,12 @@ const path = require('path')
 const qs = require('querystring')
 const validateSubscriptionForm = require('./public/common/validation')
 
-
-let db
-
-
 const app = express()
 
+let client
 app.use((req, res, next) => {
   MongoClient.connect(config.DB_URL, (error, connection) => {
-    req.conn = connection.db('subform')
+    req.conn = connection
     next()
   })
 })
@@ -28,7 +25,7 @@ app.get('/', (req, res) => {
 })
 
 app.get('/users', (req, res, next) => {
-  req.conn.collection('subscribers').find().toArray().then(subscribers => {
+  req.conn.db('subform').collection('subscribers').find().toArray().then(subscribers => {
     let html = "<h3>Подписчики</h3><ol>"
     for (let user of subscribers) {
       html = html + "<li>" + user.username + " - " + user.email + "</li>"
@@ -42,16 +39,23 @@ app.post('/subscribe', (req, res, next) => {
   let username = req.body.username
   let email = req.body.email
   let result = validateSubscriptionForm({username, email})
-  res.writeHead(200, {'Content-Type': 'application/json'})
   if (result) {
-    req.conn.collection('subscribers')
+    res.writeHead(200, {'Content-Type': 'application/json'})
+    req.conn.db('subform').collection('subscribers')
       .insertOne({ username: username, email: email, status: "subscribed"}, () => {
         console.log('Subscriber saved successfully')
         res.end(JSON.stringify({ 'status': 'subscribed' }))
       })
   } else {
+    res.writeHead(500, {'Content-Type': 'application/json'})
     res.end(JSON.stringify({ 'status': 'did not subscribe' }))
   }
+  next()
+})
+
+app.use((req, res) => {
+  req.conn.close()
+  delete req.conn
 })
 
 app.listen(8000, () => {
