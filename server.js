@@ -33,6 +33,7 @@ app.get('/users', (req, res, next) => {
     html += "</ol>"
     res.send(html)
   })
+  next()
 })
 
 app.post('/subscribe', (req, res, next) => {
