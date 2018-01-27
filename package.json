@@ -6,7 +6,7 @@
   "scripts": {
     "start": "nodemon ./server.js --exec babel-node",
     "server": "babel-node ./server.js",
-    "initDB": "echo '{\"users\": []}' > db.json"
+    "initDB": "node initdb.js"
   },
   "repository": {
     "type": "git",
@@ -28,6 +28,7 @@
     "babel-cli": "^6.26.0",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-stage-2": "^6.24.1",
+    "faker": "^4.1.0",
     "nodemon": "^1.14.3"
   }
 }
