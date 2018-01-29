@@ -3,41 +3,40 @@ const config = require('./config')
 const MongoClient = require('mongodb').MongoClient
 
 MongoClient.connect(config.DB_URL, (error, conn) => {
-  if (error) {
-    throw error
-  } else {
-    generateSubscribers(conn, 50, () => {
-      if(error) {
-        throw error
-      } else {
-        console.log("END")
-      }
-    })
-  }
-  conn.close()
+  if (error) throw error
+  generateSubscribers(conn, 50, () => {
+    if(error) throw error
+    console.log("END")
+  })
 })
 
-let generateSubscribers = (connection, numberSubscribers) => {
-  let listFakeUsers = []
+let generateSubscribers = (conn, cs) => {
+  let subscribers = []
+  let lch = 15
+  let cch = Math.ceil(cs / lch)
 
-  for(let i = 0; i < numberSubscribers; i++){
-    let username = faker.fake("{{internet.userName}}")
-    let email = faker.fake("{{internet.email}}")
-    listFakeUsers.push({ username: username, email: email, status: "subscribed" })
+  for(let i = 0; i < cch; i++){
+    let to = ((cs - lch * i) > lch) ? lch : cs - lch
+    let chunk = chunkify(to)
+    subscribers.push(chunk)
   }
-
-  let subscribers = chunkify(2, listFakeUsers)
 
   for(chunk of subscribers) {
-    connection.db('subform').collection('subscribers').insertMany(chunk)
+    conn.db('subform').collection('subscribers').insertMany(chunk)
   }
+  conn.close()
 }
 
-let chunkify = (chunk, arr) => {
-  let tmp = []
-  let lengthChunk = Math.ceil(arr.length / chunk)
-  for(let i = 0; i < arr.length; i += lengthChunk) {
-    tmp.push(arr.slice(i, i + lengthChunk))
+let chunkify = (lch) => {
+  let range = (from, to) => {
+    return Array(to).fill(null).map((_, i) => i)
   }
-  return tmp
+
+  return range(0, lch).map(() => {
+      return ({ 
+        "username": faker.fake("{{internet.userName}}"), 
+        "email": faker.fake("{{internet.email}}"), 
+        "status": "subscribed"
+      })
+  })
 }
