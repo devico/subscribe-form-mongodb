@@ -13,14 +13,6 @@ MongoClient.connect(config.DB_URL, (error, conn) => {
   })
 })
 
-let countSubscribers = 51
-
-let lengthChunk = 25
-
-let subscribers = range(0, countSubscribers).map(generateSubscriber)
-
-let chunkedSubscribers = chunkify(subscribers, lengthChunk)
-
 let range = (from, to) => {
   return Array(to).fill(null).map((_, i) => i)
 }
@@ -36,3 +28,12 @@ let generateSubscriber = () => {
 let chunkify = (arr, len) => {
   return range(0, Math.ceil(arr.length / len)).map((el, i) => arr.slice(i * len, i * len + len))
 }
+
+let countSubscribers = 51
+
+let lengthChunk = 25
+
+let subscribers = range(0, countSubscribers).map(generateSubscriber)
+
+let chunkedSubscribers = chunkify(subscribers, lengthChunk)
+
